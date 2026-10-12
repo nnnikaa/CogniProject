@@ -18,13 +18,13 @@ using ChatService.CustomSwaggerGen;
 
 var builder = WebApplication.CreateBuilder(args);
 
-try
-{
-    builder.Configuration
-       .SetBasePath(Directory.GetCurrentDirectory())
-       .AddJsonFile("secrets.json", optional: true, reloadOnChange: true);
-}
-catch (Exception ex) { }
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile(
+        "secrets.json",
+        optional: false,
+        reloadOnChange: true
+    );
 
 builder.Services.AddLogging();
 
