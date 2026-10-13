@@ -100,6 +100,7 @@ builder.Services.AddTransient<IPasswordHasher, PasswordHasher>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestRepository, TestRepository>();
+builder.Services.AddScoped<SakinorvaService>();
 builder.Services.AddTransient<IUserTagRepository, UserTagRepository>();
 builder.Services.AddTransient<IUserTagService, UserTagService>();
 builder.Services.AddTransient<IPostRepository, PostRepository>();
