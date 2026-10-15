@@ -37,15 +37,6 @@ try
 }
 catch (Exception ex) { }
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("DEV-ALL",
-        policy => policy
-            .WithOrigins("*")
-            .AllowAnyHeader()
-            .AllowAnyMethod());
-});
-
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -94,24 +85,24 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 });
 
 builder.Services.AddDbContext<CogniDbContext>();
-builder.Services.AddTransient<IUserRepository, UserRepository>();
-builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddTransient<IPasswordHasher, PasswordHasher>();
 builder.Services.AddTransient<ITokenService, TokenService>();
 builder.Services.AddScoped<ITestService, TestService>();
 builder.Services.AddScoped<ITestRepository, TestRepository>();
 builder.Services.AddScoped<SakinorvaService>();
-builder.Services.AddTransient<IUserTagRepository, UserTagRepository>();
-builder.Services.AddTransient<IUserTagService, UserTagService>();
-builder.Services.AddTransient<IPostRepository, PostRepository>();
-builder.Services.AddTransient<IPostService, PostService>();
-builder.Services.AddTransient<IFriendRepository, FriendRepository>();
-builder.Services.AddTransient<IFriendService, FriendService>();
-builder.Services.AddTransient<IImageService, ImageService>();
-builder.Services.AddTransient<IImageRepository, ImageRepository>();
-builder.Services.AddTransient<IMbtiRepository, MbtiRepository>();
-builder.Services.AddTransient<IMbtiService, MbtiService>();
-builder.Services.AddTransient<IImageConverterService, ImageConverterService>();
+builder.Services.AddScoped<IUserTagRepository, UserTagRepository>();
+builder.Services.AddScoped<IUserTagService, UserTagService>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IPostService, PostService>();
+builder.Services.AddScoped<IFriendRepository, FriendRepository>();
+builder.Services.AddScoped<IFriendService, FriendService>();
+builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<IImageRepository, ImageRepository>();
+builder.Services.AddScoped<IMbtiRepository, MbtiRepository>();
+builder.Services.AddScoped<IMbtiService, MbtiService>();
+builder.Services.AddScoped<IImageConverterService, ImageConverterService>();
 builder.Services.AddScoped<IArticleService, ArticleService>();
 builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
 builder.Services.AddAuthentication(x =>
@@ -152,12 +143,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseCors("Default");
-} else {
-    app.UseCors("Default");
-}
+app.UseCors("Default");
 
 if (Environment.GetEnvironmentVariable("MIGRATE")?.ToLower() == "true")
 {
