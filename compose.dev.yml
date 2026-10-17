@@ -53,7 +53,7 @@ services:
       timeout: 5s
 
   minio:
-    image: minio/minio
+    image: kukuruser/minio
     restart: always
     environment:
       MINIO_HOST: "http://minio:9000"
