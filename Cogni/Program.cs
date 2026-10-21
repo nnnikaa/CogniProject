@@ -21,10 +21,14 @@ builder.Services.AddCors(option => option.AddPolicy(
     name: "Default",
     policy =>
     {
+        var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
         policy.SetIsOriginAllowed(origin => 
-            Uri.TryCreate(origin, UriKind.Absolute, out var uri) &&
-            uri.Host == "localhost"
-        );
+        {
+            if (string.IsNullOrWhiteSpace(origin)) return false;
+            if (allowedOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase)) return true;
+            return Uri.TryCreate(origin, UriKind.Absolute, out var uri) &&
+                   (uri.Host == "localhost" || uri.Host == "127.0.0.1" || uri.Host == "::1");
+        });
         policy.AllowAnyHeader();
         policy.AllowAnyMethod();
         policy.AllowCredentials();
