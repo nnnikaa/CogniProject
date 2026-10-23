@@ -4,6 +4,7 @@ using Cogni.Contracts.Requests;
 using Cogni.Contracts.Responses;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Cogni.Controllers
 {
@@ -19,6 +20,18 @@ namespace Cogni.Controllers
             _postService = postService;
             _tokenService = tokenService;
         }
+
+        // Вспомогательный метод получения ID текущего пользователя
+        private bool TryGetCurrentUserId(out int userId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                              ?? User.FindFirst("id")?.Value
+                              ?? User.FindFirst("userId")?.Value;
+
+            return int.TryParse(userIdClaim, out userId);
+        }
+
+
         /// <summary>
         /// Создание поста на стене пользователя
         /// </summary>
@@ -27,13 +40,18 @@ namespace Cogni.Controllers
         [Authorize]
         public async Task<ActionResult<PostResponse>> CreatePost([FromForm] PostRequest post)
         {
-            string token = Request.Headers["Authorization"];
+            /*string token = Request.Headers["Authorization"];
             token = token.Replace("Bearer ", string.Empty);
-            int id = _tokenService.GetTokenPayload(token).UserId;
+            int id = _tokenService.GetTokenPayload(token).UserId;*/
 
+            if (!TryGetCurrentUserId(out int userId))
+            {
+                return Unauthorized();
+            }
 
+            var p = await _postService.CreatePost(post, userId);
 
-            var p = await _postService.CreatePost(post, id);
+            /*var p = await _postService.CreatePost(post, id);*/
 
             var list = p.PostImages.ToList();
             List<string> urls = new List<string>();
@@ -51,13 +69,34 @@ namespace Cogni.Controllers
         [Authorize]
         public async Task<ActionResult> DeletePost(int id)
         {
-            await _postService.DeletePost(id);
+            if (!TryGetCurrentUserId(out int currentUserId))
+            {
+                return Unauthorized();
+            }
+
+            bool isAdmin = User.IsInRole("Admin");
+
+            bool isDeleted = await _postService.DeletePost(
+                id,
+                currentUserId,
+                isAdmin);
+
+            if (!isDeleted)
+            {
+                return Forbid();
+            }
+
             return Ok();
+            /*await _postService.DeletePost(id);
+            return Ok();*/
         }
         /// <summary>
         /// Получение всех постов пользователя
         /// </summary>
-        [Microsoft.AspNetCore.Mvc.HttpPost]
+        /// 
+
+  
+        [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<List<PostResponse>>> GetAllUserPost(int id)
         {

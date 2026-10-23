@@ -46,5 +46,10 @@ public class PostRepository : IPostRepository
         return up;
 
     }
+
+    public async Task<Post?> GetPostById(int id)
+    {
+        return await _context.Posts.FindAsync(id);
+    }
 }
 

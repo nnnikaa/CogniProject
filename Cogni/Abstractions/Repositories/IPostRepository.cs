@@ -7,7 +7,9 @@ namespace Cogni.Abstractions.Repositories
         Task<List<Post>> GetAllUserPosts(int id);
         Task<Post> CreatePost(Post post);
         Task<Post> UpdatePost(Post post);
+        Task<Post?> GetPostById(int id);
         Task DeletePost(int id);
+        
 
     }
 }

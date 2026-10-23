@@ -31,9 +31,30 @@ public class PostService : IPostService
         return await _postRepository.CreatePost(p);
     }
 
-    public async Task DeletePost(int id)
+
+
+    /*public async Task DeletePost(int id)
     {
         await _postRepository.DeletePost(id);
+    }*/
+
+    public async Task<bool> DeletePost(int id, int currentUserId, bool isAdmin)
+    {
+        var post = await _postRepository.GetPostById(id);
+
+        if (post is null)
+        {
+            return false;
+        }
+
+        if (post.IdUser != currentUserId && !isAdmin)
+        {
+            return false;
+        }
+
+        await _postRepository.DeletePost(id);
+
+        return true;
     }
 
     public async Task<List<Post>> GetAllUserPosts(int id)
