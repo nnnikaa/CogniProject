@@ -64,6 +64,31 @@ public class PostService : IPostService
     }
 
 
+
+
+    public async Task<bool> ToggleReactionAsync(int postId, int userId, string reactionType = "like")
+    {
+        var post = await _postRepository.GetPostById(postId);
+
+        if (post == null)
+            return false;
+
+        await _postRepository.ToggleReactionAsync(
+            postId,
+            userId,
+            reactionType);
+
+        return true;
+    }
+
+    public async Task<(int ReactionsCount, bool IsReactedByCurrentUser)> GetReactionInfoAsync(int postId, int userId)
+    {
+        return await _postRepository.GetReactionInfoAsync(postId, userId);
+    }
+
+
+
+
     //TODO доделать + облако
     //public async Task<Post> UpdatePost(PostRequest post)
     //{
